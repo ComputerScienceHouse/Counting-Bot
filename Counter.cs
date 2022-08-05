@@ -18,6 +18,9 @@ namespace CountVonCount
 
         static int count = 0;
         
+        static List<Contributor> contributors = new();
+        static Contributor? previousContributor;
+        
         internal static async Task Run(string channelName)
         {
             // bot
@@ -43,19 +46,45 @@ namespace CountVonCount
 
         private static void OnMessageRecieved(object? u, IMessage message)
         {
-            if (int.TryParse(message.Text, out int i) && i == ++count)
-                AddReaction(message, true);
-            else
-            {
-                AddReaction(message, false);
-                message.ReplyWith(
-                    $"{Responses.SelectRandom(in Responses.CountMessedUp).Replace("@u", $"<@{message.User.Id}>")} Resetting count."
-                    );
-                count = 0;
-            }
+            // this could be better...
+            ;
+            if (int.TryParse(message.Text, out int n) && n == ++count) // valid number check
+                if (contributors.Count == 0) // brand new user
+                    HandleGoodCount(message, true);
+                else // users exist
+                    for (int i = 0; i < contributors.Count; i++)
+                        if (contributors[i].ID == message.User.Id) // chceck if user is already contributing
+                            if (message.User.Id == previousContributor!.ID) // user counted twice in a row
+                            { HandleBadCount(message); return; }
+                            else if (double.Parse(message.Ts) - double.Parse(contributors[i].TimeStamp) >= /*3600*/ 30) // has it been an hour?
+                            { HandleGoodCount(message, false, i); return; }
+                            else // hasnt been an hour
+                            { HandleBadCount(message); return; }
+                        else // new user
+                        { HandleGoodCount(message, true); return; }
+            else // invalid number
+                HandleBadCount(message);
         }
 
         private static void AddReaction(IMessage message, bool isOkCount) =>
             reactionsApi!.AddToMessage(isOkCount ? "white_check_mark" : "x", message.Conversation.Id, message.Ts);
+
+        private static void HandleBadCount(IMessage message)
+        {
+            AddReaction(message, false);
+            message.ReplyWith($"{Responses.SelectRandom(in Responses.CountMessedUp).Replace("@u", $"<@{message.User.Id}>")} Resetting count.");
+            count = 0;
+            contributors.Clear();
+        }
+        
+        private static void HandleGoodCount(IMessage message, bool newUser, int? userIndex = null)
+        {
+            AddReaction(message, true);
+            previousContributor = new(message.User, message.Ts);
+            if (newUser)
+                contributors.Add(new(message.User, message.Ts));
+            else
+                contributors[userIndex ?? throw new NullReferenceException()].TimeStamp = message.Ts;
+        }
     }
 }
