@@ -6,8 +6,8 @@ using c = System.Console;
 
 #if RUN_BOT
 var b = new Counter();
-Counter.Run("C03SSEW3T7B").Wait();
-c.WriteLine("Press any key to continue...");
+Counter.Run("#count").Wait();
+c.WriteLine("Press any key to stop the bot...");
 c.ReadKey();
 #endif
 

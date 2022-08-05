@@ -1,12 +1,10 @@
-﻿// minimal example for sending a simple message to a channel with the SlackAPI library
-// this example uses the Async method
-
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Text;
 using c = System.Console;
 using SlackNet;
 using SlackNet.Bot;
+using SlackNet.WebApi;
 
 namespace CountVonCount
 {
@@ -15,26 +13,40 @@ namespace CountVonCount
         static readonly string start = "Alrighty ladies and gentlemen, lets get counting! The nth reply to this channel must be the nth number in the set of cardinal numbers. " +
             "Rules: You cannot reply to yourself and you must wait an hour between each of your own replies. What number can we get to without someone fucking it up.";
 
-        internal static async Task Run(string channelID)
+        static SlackBot? bot;
+        static ReactionsApi? reactionsApi;
+        
+        internal static async Task Run(string channelName)
         {
+            // bot
+            
             var botToken = Tokens.ReadToken("bot");
-            var bot = new SlackBot(botToken);
+            bot = new SlackBot(botToken);
             await bot.Connect();
 
             await bot.Send(new BotMessage
             {
                 Text = start,
-                Conversation = "#count",
+                Conversation = channelName,
                 
             });
 
             bot.OnMessage += OnMessageRecieved;
+
+            // reactions api
+            SlackApiClient client = new(botToken);
+            reactionsApi = new(client);
         }
 
-        private static void OnMessageRecieved(object? sender, IMessage message)
+        private static void OnMessageRecieved(object? u, IMessage message)
         {
-            message.ReplyWith(message.Text);
+            //message.ReplyWith(message.Text);
             // throw new NotImplementedException();
+            // TODO: call method to handle counting
+            AddReaction(message, new Random().NextDouble() > .5);
         }
+
+        private static void AddReaction(IMessage message, bool isOkCount) =>
+            reactionsApi!.AddToMessage(isOkCount ? "white_check_mark" : "negative_squared_cross_mark", message.Conversation.Id, message.Ts);
     }
 }
