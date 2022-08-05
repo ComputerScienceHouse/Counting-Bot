@@ -15,6 +15,8 @@ namespace CountVonCount
 
         static SlackBot? bot;
         static ReactionsApi? reactionsApi;
+
+        static int count = 0;
         
         internal static async Task Run(string channelName)
         {
@@ -34,19 +36,26 @@ namespace CountVonCount
             bot.OnMessage += OnMessageRecieved;
 
             // reactions api
+            
             SlackApiClient client = new(botToken);
             reactionsApi = new(client);
         }
 
         private static void OnMessageRecieved(object? u, IMessage message)
         {
-            //message.ReplyWith(message.Text);
-            // throw new NotImplementedException();
-            // TODO: call method to handle counting
-            AddReaction(message, new Random().NextDouble() > .5);
+            if (int.TryParse(message.Text, out int i) && i == ++count)
+                AddReaction(message, true);
+            else
+            {
+                AddReaction(message, false);
+                message.ReplyWith(
+                    $"{Responses.SelectRandom(in Responses.CountMessedUp).Replace("@u", $"<@{message.User.Id}>")} Resetting count."
+                    );
+                count = 0;
+            }
         }
 
         private static void AddReaction(IMessage message, bool isOkCount) =>
-            reactionsApi!.AddToMessage(isOkCount ? "white_check_mark" : "negative_squared_cross_mark", message.Conversation.Id, message.Ts);
+            reactionsApi!.AddToMessage(isOkCount ? "white_check_mark" : "x", message.Conversation.Id, message.Ts);
     }
 }
