@@ -15,7 +15,8 @@ namespace CountVonCount
             setemoji,
             settimeout,
             help,
-            config
+            config,
+            timeleft
         }
         internal static void HandleSlashCommand(string command, IMessage message)
         {
@@ -110,6 +111,16 @@ namespace CountVonCount
                         foreach (var prop in typeof(Config).GetProperties(BindingFlags.Static | BindingFlags.NonPublic))
                             config += $"{prop.Name} ({prop.PropertyType}): {prop.GetValue(null, null)}, ";
                         HandleDm(message, $"{config[..^1]} }}").Wait();
+                        break;
+                    case Commands.timeleft:
+                        for (int i = 0; i < Counter.contributors.Count; i++)
+                            if (message.User.Id == Counter.contributors[i].ID)
+                            {
+                                ulong timeLeft = (ulong)(Config.WaitTimeSeconds! - (ulong)(double.Parse(message.Ts) - double.Parse(Counter.contributors[i].TimeStamp)));
+                                HandleDm(message, $"{(timeLeft < Config.WaitTimeSeconds ? $"Seconds until next available count: {timeLeft}" : "You are all set to count again!")}").Wait();
+                            }
+                            else
+                                HandleDm(message, "You are all set to count again!").Wait();
                         break;
                     default:
                         HandleDm(message, "Unknown command.").Wait();

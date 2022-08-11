@@ -24,7 +24,7 @@ namespace CountVonCount
 
         static int count = 0;
 
-        static List<Contributor> contributors = new();
+        internal static List<Contributor> contributors = new();
         static Contributor? previousContributor;
 
         internal static async Task Run()
