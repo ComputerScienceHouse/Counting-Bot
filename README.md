@@ -36,6 +36,7 @@ Rebuildng the program and running it will prompt you with inputs.
 You can create a slack classic app [here](https://api.slack.com/apps?new_classic_app=1). Follow the websites instructions to setup the OAuth scopes of the bot.
 It should have the following permissions:
 * bot
+* admin
 * channels:history
 * channels:read
 * chanels:write

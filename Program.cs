@@ -4,9 +4,18 @@
 using CountVonCount;
 using c = System.Console;
 
+
+
 #if RUN_BOT
-var b = new Counter();
-Counter.Run("#count").Wait();
+// default config:
+Config.Channel = "count";
+Config.WaitTimeSeconds = 3600;
+Config.OkCountEmoji = "white_check_mark";
+Config.BadCountEmoji = "x";
+    
+// TODO: serializable config
+
+Counter.Run().Wait();
 c.WriteLine("Press any key to stop the bot...");
 c.ReadKey();
 #endif
