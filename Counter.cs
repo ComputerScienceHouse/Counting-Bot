@@ -20,20 +20,21 @@ namespace CountVonCount
         internal static ReactionsApi? ReactionsApi { get; private set; }
         internal static ChatApi? ChatApi { get; private set; }
         internal static ConversationsApi? ConversationsApi { get; private set; }
+        //internal static EmojiApi? EmojiApi { get; private set; }
 
         static int count = 0;
-        
+
         static List<Contributor> contributors = new();
         static Contributor? previousContributor;
-        
+
         internal static async Task Run()
         {
             // bot
-            
+
             var botToken = Tokens.ReadToken("bot");
             Bot = new SlackBot(botToken);
             await Bot.Connect();
-            
+
             #if !DEBUG
             await Bot.Send(new()
             {
@@ -48,35 +49,36 @@ namespace CountVonCount
             Bot.OnMessage += OnMessageRecieved;
 
             // client and apis
-            
+
             Client = new(botToken);
             ReactionsApi = new(Client);
             ChatApi = new(Client);
             ConversationsApi = new(Client);
+            //EmojiApi = new(Client);
         }
 
         private static void OnMessageRecieved(object? u, IMessage message)
         {
             // this could be soooo much better... guess ill leave it as it is
-            if (message.Text[0] == '\\') // slash command (slack doesnt like slashes so I used a baclskash)
+            if (message.Text[0] == '\\' && !message.User.IsBot) // slash command (slack doesnt like slashes so I used a baclskash)
                 SlashCR.HandleSlashCommand(message.Text[1..], message);
             else if (message.Conversation.Name == Config.Channel) // counting in a valid channel only
                 if (int.TryParse(message.Text, out int n) && n == ++count) // valid number check
-                        if (contributors.Count == 0) // brand new user
-                            HandleGoodCount(message, true);
-                        else // users exist
-                            for (int i = 0; i < contributors.Count; i++) // CS0162 here, I cant wrap my head around why and id need more ppl to help me test
-                                if (contributors[i].ID == message.User.Id) // chceck if user is already contributing
-                                    if (message.User.Id == previousContributor!.ID) // user counted twice in a row
-                                    { HandleBadCount(message); return; }
-                                    else if (double.Parse(message.Ts) - double.Parse(contributors[i].TimeStamp) >= Config.WaitTimeSeconds) // has it been an hour?
-                                    { HandleGoodCount(message, false, i); return; }
-                                    else // hasnt been an hour
-                                    { HandleBadCount(message); return; }
-                                else // new user
-                                { HandleGoodCount(message, true); return; }
-                    else // invalid number
-                        HandleBadCount(message);
+                    if (contributors.Count == 0) // brand new user
+                        HandleGoodCount(message, true);
+                    else // users exist
+                        for (int i = 0; i < contributors.Count; i++) // CS0162 here, I cant wrap my head around why and id need more ppl to help me test
+                            if (contributors[i].ID == message.User.Id) // chceck if user is already contributing
+                                if (message.User.Id == previousContributor!.ID) // user counted twice in a row
+                                { HandleBadCount(message); return; }
+                                else if (double.Parse(message.Ts) - double.Parse(contributors[i].TimeStamp) >= Config.WaitTimeSeconds) // has it been an hour?
+                                { HandleGoodCount(message, false, i); return; }
+                                else // hasnt been an hour
+                                { HandleBadCount(message); return; }
+                            else // new user
+                            { HandleGoodCount(message, true); return; }
+                else // invalid number
+                    HandleBadCount(message);
         }
 
         internal static void AddReaction(IMessage message, bool isOkCount) =>
@@ -89,7 +91,7 @@ namespace CountVonCount
             count = 0;
             contributors.Clear();
         }
-        
+
         private static void HandleGoodCount(IMessage message, bool newUser, int? userIndex = null)
         {
             AddReaction(message, true);
@@ -110,5 +112,7 @@ namespace CountVonCount
                 Conversation = Config.Channel,
             });
         }
+
+        internal static async Task SendMessage(string channelID, string message) => await Bot!.Send(new() { Text = message, Conversation = channelID });
     }
 }
