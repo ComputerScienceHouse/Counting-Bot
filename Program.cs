@@ -8,7 +8,7 @@ using c = System.Console;
 
 #if RUN_BOT
 // default config:
-Config.Channel = "count";
+Config.Channel = "counting";
 Config.WaitTimeSeconds = 3600;
 Config.OkCountEmoji = "white_check_mark";
 Config.BadCountEmoji = "x";
