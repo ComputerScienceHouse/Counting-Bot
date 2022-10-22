@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,7 +32,10 @@ namespace CountVonCount
                 highscore = int.Parse(lines[4]);
             }
             else
-                WriteConfig(defaultConfig, 0);
+            {
+                WriteEnvar(config);
+                WriteEnvar(highscore);
+            }
 
             return (config, highscore);
         }
@@ -47,5 +51,21 @@ namespace CountVonCount
                 highscore.ToString()
             });
         }
+
+        // envars
+        internal static void WriteEnvar(Config config)
+            => typeof(Config).GetProperties(BindingFlags.NonPublic | BindingFlags.Instance).ToList().ForEach(p => Environment.SetEnvironmentVariable(p.Name.ToUpper(), p.GetValue(config)!.ToString()));
+
+        internal static void WriteEnvar(int highscore) => Environment.SetEnvironmentVariable("HIGHSCORE", highscore.ToString());
+
+        internal static (Config config, int highscore) ReadEnvar() => (
+            new ()
+            {
+                Channel = Environment.GetEnvironmentVariable("CHANNEL"),
+                WaitTimeSeconds = ulong.Parse(Environment.GetEnvironmentVariable("WAITTIMESECONDS")!),
+                OkCountEmoji = Environment.GetEnvironmentVariable("OKCOUNTEMOJI"),
+                BadCountEmoji = Environment.GetEnvironmentVariable("BADCOUNTEMOJI")
+            }, 
+            int.Parse(Environment.GetEnvironmentVariable("HIGHSCORE")!));
     }
 }

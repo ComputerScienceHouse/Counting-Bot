@@ -12,8 +12,8 @@ namespace CountVonCount
         static void Main(string[] args)
         {
             // subscribe to the process being killed and save when it happens
-            var (config, highScore) = SimpleSerializer.ReadConfig();
-            AppDomain.CurrentDomain.ProcessExit += (s, e) => SimpleSerializer.WriteConfig(config, Counter.HighScore);
+            var (config, highScore) = SimpleSerializer.ReadEnvar();
+            AppDomain.CurrentDomain.ProcessExit += (s, e) => { SimpleSerializer.WriteEnvar(config); SimpleSerializer.WriteEnvar(Counter.HighScore); };
             Program.config = config;
             Counter.HighScore = highScore;
 

@@ -118,11 +118,12 @@ namespace CountVonCount
                             switch (args[1].ToLower())
                             {
                                 case "save":
-                                    SimpleSerializer.WriteConfig(Program.config, Counter.HighScore);
+                                    SimpleSerializer.WriteEnvar(Program.config);
+                                    SimpleSerializer.WriteEnvar(Counter.HighScore);
                                     HandleDm(message, "Saved config.").Wait();
                                     break;
                                 case "load":
-                                    (Program.config, Counter.HighScore) = SimpleSerializer.ReadConfig();
+                                    (Program.config, Counter.HighScore) = SimpleSerializer.ReadEnvar();
                                     HandleDm(message, "Loaded config.").Wait();
                                     break;
                                 default:
