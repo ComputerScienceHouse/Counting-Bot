@@ -11,38 +11,17 @@ namespace CountVonCount
         internal static Config config = (Config)Activator.CreateInstance(typeof(Config))!;
         static void Main(string[] args)
         {
-#if WIPCONFIGS
-            if (!File.Exists("config.cereal"))
-            {
-                config.Channel = "counting";
-                config.WaitTimeSeconds = 3600;
-                config.OkCountEmoji = "white_check_mark";
-                config.BadCountEmoji = "x";
-                File.WriteAllBytes("config.cereal", DataCerealizer<Config>.Serialize(config, "Count Von Count default config."));
-            }
-            else
-            {
-                var bconf = File.ReadAllBytes("config.cereal");
-                config = DataCerealizer<Config>.Deserialize(bconf); 
-            }
-
-
-            // TODO: serializable config
-#else
-            config = new()
-            {
-                Channel = "count",
-                WaitTimeSeconds = 3600,
-                OkCountEmoji = "white_check_mark",
-                BadCountEmoji = "x"
-            };
-#endif
+            // subscribe to the process being killed and save when it happens
+            var (config, highScore) = SimpleSerializer.ReadConfig();
+            AppDomain.CurrentDomain.ProcessExit += (s, e) => SimpleSerializer.WriteConfig(config, Counter.HighScore);
+            Program.config = config;
+            Counter.HighScore = highScore;
 
 #if RUN_BOT
             Counter.Run().Wait();
-            for (;;)
+            for (; ; )
                 ; // stay alive, forever
-        }
 #endif
+        }
     }
 }

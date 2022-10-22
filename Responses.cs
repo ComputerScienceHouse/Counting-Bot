@@ -17,7 +17,7 @@
             "There's some elementary schoolers in Georgia (the country) laughing at the thought of @u rn",
             "You fucking idiot you stupid dummy I'm going to kill your parents if you mistcount again. Fuck You.",
             "Wake up your APU's 2nd guinea pig.",
-            "I bet this guy can't even read Weird Clock 🤣🤣 (https://weird-clock.csh.rit.edu/)",
+            "I bet this guy can't even read Weird Clock 🤣🤣 (<https://weird-clock.csh.rit.edu/>)",
             "@u L + Ratio + Skill Issue + You Can't Count + Git Gud + Cringe",
             $"@u I think you meant {Counter.Count}. Get it right next time.",
             "@u probably writes python.",

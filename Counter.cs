@@ -30,7 +30,7 @@ namespace CountVonCount
         static Contributor? previousContributor;
 
         internal static string? CtxThread;
-        internal static int HighScore { get; private set; } = 0;
+        internal static int HighScore { get; set; } = 0;
         internal static async Task Run()
         {
             // bot
