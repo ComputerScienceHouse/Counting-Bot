@@ -30,11 +30,12 @@ namespace CountVonCount
         static Contributor? previousContributor;
 
         internal static string? CtxThread;
+        internal static int HighScore { get; private set; } = 0;
         internal static async Task Run()
         {
             // bot
 
-            var botToken = "xoxb-3897780282835-3898543784995-8LQ9wyEwLDvCR3NJetGRJnLM";//Tokens.ReadToken("bot");
+            var botToken = Tokens.ReadToken("bot");
             Bot = new SlackBot(botToken);
             await Bot.Connect();
 
@@ -98,6 +99,7 @@ namespace CountVonCount
 
         private static void HandleGoodCount(IMessage message, bool newUser, int? userIndex = null)
         {
+            HighScore = Math.Max(HighScore, count);
             AddReaction(message, true);
             previousContributor = new(message.User, message.Ts);
             if (newUser)

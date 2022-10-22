@@ -17,7 +17,8 @@ namespace CountVonCount
             help,
             config,
             timeleft,
-            startcount
+            startcount,
+            highscore
         }
         internal static void HandleSlashCommand(string command, IMessage message)
         {
@@ -126,6 +127,9 @@ namespace CountVonCount
                             }
                             else
                                 HandleDm(message, "You are all set to count again!").Wait();
+                        break;
+                    case Commands.highscore:
+                        Counter.SendMessage(Program.config.Channel!, $"Current highscore: {Counter.HighScore}!").Wait();
                         break;
                     default:
                         HandleDm(message, "Unknown command.").Wait();
