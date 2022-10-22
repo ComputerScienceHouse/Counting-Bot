@@ -1,10 +1,11 @@
 ﻿namespace CountVonCount
 {
-    internal static class Config
+    internal class Config
     {
-        internal static string? Channel { get; set; }
-        internal static ulong? WaitTimeSeconds { get; set; }
-        internal static string? OkCountEmoji { get; set; }
-        internal static string? BadCountEmoji { get; set; }
+        internal string? Channel { get; set; }
+        internal ulong? WaitTimeSeconds { get; set; }
+        internal string? OkCountEmoji { get; set; }
+        internal string? BadCountEmoji { get; set; }
+        private string ineedafieldsotheserializerworks = "";
     }
 }

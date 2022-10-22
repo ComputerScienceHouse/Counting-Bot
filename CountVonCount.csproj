@@ -8,8 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SlackNet" Version="0.10.9" />
-    <PackageReference Include="SlackNet.Bot" Version="0.10.9" />
+    <PackageReference Include="DataCerealizer" Version="1.0.0" />
+    <PackageReference Include="SlackNet" Version="0.10.14" />
+    <PackageReference Include="SlackNet.Bot" Version="0.10.14" />
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,6 @@ namespace CountVonCount
 {
     internal static class Tokens
     {
-        internal static string ReadToken(string type) => Environment.GetEnvironmentVariable("SLACK_KEY");
+        internal static string ReadToken(string type) => Environment.GetEnvironmentVariable("SLACK_KEY") ?? throw new NullReferenceException("Key not found!");
     }
 }

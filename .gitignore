@@ -344,3 +344,5 @@ MigrationBackup/
 *.pems
 
 bin/
+
+.env

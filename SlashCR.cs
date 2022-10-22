@@ -9,7 +9,7 @@ namespace CountVonCount
     {
         private enum Commands
         {
-            ping,
+            //ping,
             reset,
             //kys,
             setemoji,
@@ -24,23 +24,23 @@ namespace CountVonCount
             if (Enum.TryParse(args[0].ToLower(), out Commands parse))
                 switch (parse)
                 {
-                    case Commands.ping:
-                        // uhhhhhhhhh
-                        Thread pingThread = new(() =>
-                        {
-                            int? elapsedMs = null;
-                            var dm = Counter.ConversationsApi!.OpenAndReturnInfo(new string[] { message.User.Id });
-                            Stopwatch stopwatch = new();
-                            stopwatch.Restart();
-                            stopwatch.Start();
-                            Counter.SendMessage(dm.Result.Channel.Id, "testing").Wait();
-                            stopwatch.Stop();
-                            elapsedMs = (int)stopwatch.ElapsedMilliseconds;
-
-                            HandleDm(message, $"pong! {(elapsedMs is null ? "latency unavailable" : elapsedMs)}").Wait();
-                        });
-                        pingThread.Start();
-                        break;
+                    // case Commands.ping: // pinging is broken????
+                    //     // uhhhhhhhhh
+                    //     Thread pingThread = new(() =>
+                    //     {
+                    //         int? elapsedMs = null;
+                    //         var dm = Counter.ConversationsApi!.OpenAndReturnInfo(new string[] { message.User.Id });
+                    //         Stopwatch stopwatch = new();
+                    //         stopwatch.Restart();
+                    //         stopwatch.Start();
+                    //         Counter.SendMessage(dm.Result.Channel.Id, "testing").Wait();
+                    //         stopwatch.Stop();
+                    //         elapsedMs = (int)stopwatch.ElapsedMilliseconds;
+                    // 
+                    //         HandleDm(message, $"pong! {(elapsedMs is null ? "latency unavailable" : elapsedMs)}").Wait();
+                    //     });
+                    //     pingThread.Start();
+                    //     break;
                     case Commands.reset:
                         Counter.ResetCount().Wait();
                         break;
@@ -62,10 +62,10 @@ namespace CountVonCount
                         switch (args[1].ToLower())
                         {
                             case "ok":
-                                Config.OkCountEmoji = emoji;
+                                Program.config.OkCountEmoji = emoji;
                                 break;
                             case "bad":
-                                Config.BadCountEmoji = emoji;
+                                Program.config.BadCountEmoji = emoji;
                                 break;
                             default:
                                 HandleDm(message, @"Usage: \setemoji [ok | bad] <emoji>").Wait();
@@ -99,8 +99,8 @@ namespace CountVonCount
                                 };
                             else
                                 HandleDm(message, @"Time parse failed. Usage: \settimeout <time>[d | h | m | s]").Wait();
-                        Config.WaitTimeSeconds = timeOut;
-                        Counter.SendMessage(Config.Channel!, $"Timeout is now {timeOut} seconds.").Wait();
+                        Program.config.WaitTimeSeconds = timeOut;
+                        Counter.SendMessage(Program.config.Channel!, $"Timeout is now {timeOut} seconds.").Wait();
                         HandleDm(message, "Set successfully.").Wait();
                         break;
                     case Commands.help:
@@ -116,8 +116,8 @@ namespace CountVonCount
                         for (int i = 0; i < Counter.contributors.Count; i++)
                             if (message.User.Id == Counter.contributors[i].ID)
                             {
-                                ulong timeLeft = (ulong)(Config.WaitTimeSeconds! - (ulong)(double.Parse(message.Ts) - double.Parse(Counter.contributors[i].TimeStamp)));
-                                HandleDm(message, $"{(timeLeft < Config.WaitTimeSeconds ? $"Seconds until next available count: {timeLeft}" : "You are all set to count again!")}").Wait();
+                                ulong timeLeft = (ulong)(Program.config.WaitTimeSeconds! - (ulong)(double.Parse(message.Ts) - double.Parse(Counter.contributors[i].TimeStamp)));
+                                HandleDm(message, $"{(timeLeft < Program.config.WaitTimeSeconds ? $"Seconds until next available count: {timeLeft}" : "You are all set to count again!")}").Wait();
                             }
                             else
                                 HandleDm(message, "You are all set to count again!").Wait();
@@ -160,6 +160,6 @@ namespace CountVonCount
         }
 
         // #warning bot users cant delete messages??!
-        private static async Task DeleteMsg(IMessage message) => throw new NotImplementedException(); //await Counter.ChatApi!.Delete(message.Ts, message.Conversation.Id);
+        //private static async Task DeleteMsg(IMessage message) => throw new NotImplementedException(); //await Counter.ChatApi!.Delete(message.Ts, message.Conversation.Id);
     }
 }

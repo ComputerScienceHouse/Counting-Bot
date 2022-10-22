@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define DBG
+
+using System;
 using System.Threading.Tasks;
 using System.Text;
 using c = System.Console;
@@ -10,7 +12,7 @@ namespace CountVonCount
 {
     internal class Counter
     {
-        #if !DEBUG
+        #if DEBUG && DBG
         static readonly string start = "Alrighty ladies and gentlemen, lets get counting! The nth reply to this channel must be the nth number in the set of cardinal numbers. " +
             "Rules: You cannot reply to yourself and you must wait an hour between each of your own replies. What number can we get to without someone fucking it up.";
         #endif
@@ -35,11 +37,11 @@ namespace CountVonCount
             Bot = new SlackBot(botToken);
             await Bot.Connect();
 
-            #if !DEBUG
+            #if DEBUG && DBG
             await Bot.Send(new()
             {
                 Text = start,
-                Conversation = Config.Channel,
+                Conversation = Program.config.Channel,
                 
             });
             #endif
@@ -62,7 +64,7 @@ namespace CountVonCount
             // this could be soooo much better... guess ill leave it as it is
             if (message.Text[0] == '\\' && !message.User.IsBot) // slash command (slack doesnt like slashes so I used a baclskash)
                 SlashCR.HandleSlashCommand(message.Text[1..], message);
-            else if (message.Conversation.Name == Config.Channel) // counting in a valid channel only
+            else if (message.Conversation.Name == Program.config.Channel) // counting in a valid channel only
                 if (int.TryParse(message.Text, out int n) && n == ++count) // valid number check
                     if (contributors.Count == 0) // brand new user
                         HandleGoodCount(message, true);
@@ -71,7 +73,7 @@ namespace CountVonCount
                             if (contributors[i].ID == message.User.Id) // chceck if user is already contributing
                                 if (message.User.Id == previousContributor!.ID) // user counted twice in a row
                                 { HandleBadCount(message); return; }
-                                else if (double.Parse(message.Ts) - double.Parse(contributors[i].TimeStamp) >= Config.WaitTimeSeconds) // has it been an hour?
+                                else if (double.Parse(message.Ts) - double.Parse(contributors[i].TimeStamp) >= Program.config.WaitTimeSeconds) // has it been an hour?
                                 { HandleGoodCount(message, false, i); return; }
                                 else // hasnt been an hour
                                 { HandleBadCount(message); return; }
@@ -82,7 +84,7 @@ namespace CountVonCount
         }
 
         internal static void AddReaction(IMessage message, bool isOkCount) =>
-            ReactionsApi!.AddToMessage(isOkCount ? Config.OkCountEmoji : Config.BadCountEmoji, message.Conversation.Id, message.Ts);
+            ReactionsApi!.AddToMessage(isOkCount ? Program.config.OkCountEmoji : Program.config.BadCountEmoji, message.Conversation.Id, message.Ts);
 
         private static void HandleBadCount(IMessage message)
         {
@@ -109,7 +111,7 @@ namespace CountVonCount
             await Bot!.Send(new()
             {
                 Text = "Resetting count.",
-                Conversation = Config.Channel,
+                Conversation = Program.config.Channel,
             });
         }
 
