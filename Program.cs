@@ -12,10 +12,10 @@ namespace CountVonCount
         static void Main(string[] args)
         {
             // subscribe to the process being killed and save when it happens
-            var (config, highScore) = SimpleSerializer.ReadConfig();
-            AppDomain.CurrentDomain.ProcessExit += (s, e) => SimpleSerializer.WriteConfig(config, Counter.HighScore);
-            Program.config = config;
-            Counter.HighScore = highScore;
+            //var (config, highScore) = SimpleSerializer.ReadConfig();
+            //AppDomain.CurrentDomain.ProcessExit += (s, e) => SimpleSerializer.WriteConfig(config, Counter.HighScore);
+            Program.config = SimpleSerializer.defaultConfig;
+            Counter.HighScore = 0; // since i cant store data rn we cant have nice things
 
 #if RUN_BOT
             Counter.Run().Wait();

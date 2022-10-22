@@ -114,24 +114,24 @@ namespace CountVonCount
                         HandleDm(message, $@"\[{string.Join(" | ", Enum.GetNames<Commands>().Where(s => !string.IsNullOrEmpty(s)))}] <args>").Wait();
                         break;
                     case Commands.config:
-                        if (args.Length > 1)
-                            switch (args[1].ToLower())
-                            {
-                                case "save":
-                                    //SimpleSerializer.WriteEnvar(Program.config);
-                                    //SimpleSerializer.WriteEnvar(Counter.HighScore);
-                                    SimpleSerializer.WriteConfig(Program.config, Counter.HighScore);
-                                    HandleDm(message, "Saved config.").Wait();
-                                    break;
-                                case "load":
-                                    (Program.config, Counter.HighScore) = SimpleSerializer.ReadConfig();
-                                    HandleDm(message, "Loaded config.").Wait();
-                                    break;
-                                default:
-                                    HandleDm(message, $@"\config <[save | load]>").Wait();
-                                    break;
-                            }
-                        else if (args.Length == 1)
+                        // if (args.Length > 1)
+                        //     switch (args[1].ToLower())
+                        //     {
+                        //         case "save":
+                        //             //SimpleSerializer.WriteEnvar(Program.config);
+                        //             //SimpleSerializer.WriteEnvar(Counter.HighScore);
+                        //             SimpleSerializer.WriteConfig(Program.config, Counter.HighScore);
+                        //             HandleDm(message, "Saved config.").Wait();
+                        //             break;
+                        //         case "load":
+                        //             (Program.config, Counter.HighScore) = SimpleSerializer.ReadConfig();
+                        //             HandleDm(message, "Loaded config.").Wait();
+                        //             break;
+                        //         default:
+                        //             HandleDm(message, $@"\config <[save | load]>").Wait();
+                        //             break;
+                        //     }
+                        /*else*/ if (args.Length == 1)
                         {
                             string config = "Current configuration { ";
                             foreach (var prop in typeof(Config).GetProperties(BindingFlags.NonPublic | BindingFlags.Instance))
