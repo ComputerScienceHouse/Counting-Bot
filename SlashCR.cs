@@ -18,7 +18,8 @@ namespace CountVonCount
             config,
             timeleft,
             startcount,
-            highscore
+            highscore,
+            //findcount
         }
         internal static void HandleSlashCommand(string command, IMessage message)
         {
@@ -149,6 +150,18 @@ namespace CountVonCount
                     case Commands.highscore:
                         Counter.SendMessage(Program.config.Channel!, $"Current highscore: {Counter.HighScore}!").Wait();
                         break;
+                    // case Commands.findcount: // todo: this (i am tired)
+                    //     HandleDm(message, Counter.CtxThread is not null 
+                    //         ? Counter.ChatApi!.GetPermalink(Counter.Client!.Conversations
+                    //             .List()
+                    //             .GetAwaiter()
+                    //             .GetResult().Channels
+                    //             .ToList()
+                    //             .Find(convo => convo.Name == Counter.CtxThread)?.Id, Counter.CtxThread)
+                    //                 .GetAwaiter()
+                    //                 .GetResult().Permalink 
+                    //         : "No active count thread.").Wait();
+                    //     break;
                     default:
                         HandleDm(message, "Unknown command.").Wait();
                         break;
