@@ -24,7 +24,7 @@ namespace CountVonCount
         internal static ConversationsApi? ConversationsApi { get; private set; }
         //internal static EmojiApi? EmojiApi { get; private set; }
 
-        static int count = 0;
+        internal static int Count { get; private set; } = 0;
 
         internal static List<Contributor> contributors = new();
         static Contributor? previousContributor;
@@ -67,7 +67,7 @@ namespace CountVonCount
             if (message.Text[0] == '\\' && !message.User.IsBot) // slash command (slack doesnt like slashes so I used a baclskash)
                 SlashCR.HandleSlashCommand(message.Text[1..], message);
             else if (message.Conversation.Name == Program.config.Channel && message.IsInThread && message.ThreadTs == (CtxThread ??= message.ThreadTs)) // counting in a valid channel only, and is in the currrent thread
-                if (int.TryParse(message.Text, out int n) && n == ++count) // valid number check
+                if (int.TryParse(message.Text, out int n) && n == ++Count) // valid number check
                     if (contributors.Count == 0) // brand new user
                         HandleGoodCount(message, true);
                     else // users exist
@@ -92,14 +92,14 @@ namespace CountVonCount
         {
             AddReaction(message, false);
             message.ReplyWith($"{Responses.SelectRandom(in Responses.CountMessedUp).Replace("@u", $"<@{message.User.Id}>")} Resetting count.");
-            count = 0;
+            Count = 0;
             contributors.Clear();
             CtxThread = null;
         }
 
         private static void HandleGoodCount(IMessage message, bool newUser, int? userIndex = null)
         {
-            HighScore = Math.Max(HighScore, count);
+            HighScore = Math.Max(HighScore, Count);
             AddReaction(message, true);
             previousContributor = new(message.User, message.Ts);
             if (newUser)
@@ -110,7 +110,7 @@ namespace CountVonCount
 
         internal static async Task ResetCount()
         {
-            count = 0;
+            Count = 0;
             contributors.Clear();
             await Bot!.Send(new()
             {
