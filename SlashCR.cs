@@ -16,7 +16,8 @@ namespace CountVonCount
             settimeout,
             help,
             config,
-            timeleft
+            timeleft,
+            startcount
         }
         internal static void HandleSlashCommand(string command, IMessage message)
         {
@@ -24,6 +25,10 @@ namespace CountVonCount
             if (Enum.TryParse(args[0].ToLower(), out Commands parse))
                 switch (parse)
                 {
+                    case Commands.startcount:
+                        message.ReplyWith(Counter.start, false).Wait();
+                        Counter.CtxThread = message.ThreadTs;
+                        break;
                     // case Commands.ping: // pinging is broken????
                     //     // uhhhhhhhhh
                     //     Thread pingThread = new(() =>

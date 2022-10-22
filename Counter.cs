@@ -1,4 +1,4 @@
-﻿//#define DBG
+﻿#define DBG
 
 using System;
 using System.Threading.Tasks;
@@ -12,8 +12,8 @@ namespace CountVonCount
 {
     internal class Counter
     {
-        #if DEBUG && DBG
-        static readonly string start = "Alrighty ladies and gentlemen, lets get counting! The nth reply to this channel must be the nth number in the set of cardinal numbers. " +
+        #if DEBUG || DBG
+        internal static readonly string start = "Alrighty ladies and gentlemen, lets get counting! The nth reply to this thread must be the nth number in the set of cardinal numbers. " +
             "Rules: You cannot reply to yourself and you must wait an hour between each of your own replies. What number can we get to without someone fucking it up.";
         #endif
 
@@ -29,22 +29,23 @@ namespace CountVonCount
         internal static List<Contributor> contributors = new();
         static Contributor? previousContributor;
 
+        internal static string? CtxThread;
         internal static async Task Run()
         {
             // bot
 
-            var botToken = Tokens.ReadToken("bot");
+            var botToken = "xoxb-3897780282835-3898543784995-8LQ9wyEwLDvCR3NJetGRJnLM";//Tokens.ReadToken("bot");
             Bot = new SlackBot(botToken);
             await Bot.Connect();
 
-            #if DEBUG && DBG
-            await Bot.Send(new()
-            {
-                Text = start,
-                Conversation = Program.config.Channel,
-                
-            });
-            #endif
+            // #if DEBUG && DBG
+            // await Bot.Send(new()
+            // {
+            //     Text = start,
+            //     Conversation = Program.config.Channel,
+            //     
+            // });
+            // #endif
 
             // event subscription
 
@@ -64,7 +65,7 @@ namespace CountVonCount
             // this could be soooo much better... guess ill leave it as it is
             if (message.Text[0] == '\\' && !message.User.IsBot) // slash command (slack doesnt like slashes so I used a baclskash)
                 SlashCR.HandleSlashCommand(message.Text[1..], message);
-            else if (message.Conversation.Name == Program.config.Channel) // counting in a valid channel only
+            else if (message.Conversation.Name == Program.config.Channel && message.IsInThread && message.ThreadTs == (CtxThread ??= message.ThreadTs)) // counting in a valid channel only, and is in the currrent thread
                 if (int.TryParse(message.Text, out int n) && n == ++count) // valid number check
                     if (contributors.Count == 0) // brand new user
                         HandleGoodCount(message, true);
@@ -92,6 +93,7 @@ namespace CountVonCount
             message.ReplyWith($"{Responses.SelectRandom(in Responses.CountMessedUp).Replace("@u", $"<@{message.User.Id}>")} Resetting count.");
             count = 0;
             contributors.Clear();
+            CtxThread = null;
         }
 
         private static void HandleGoodCount(IMessage message, bool newUser, int? userIndex = null)

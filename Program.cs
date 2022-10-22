@@ -31,7 +31,7 @@ namespace CountVonCount
 #else
             config = new()
             {
-                Channel = "counting",
+                Channel = "count",
                 WaitTimeSeconds = 3600,
                 OkCountEmoji = "white_check_mark",
                 BadCountEmoji = "x"
