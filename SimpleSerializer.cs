@@ -9,7 +9,7 @@ namespace CountVonCount
 {
     internal class SimpleSerializer
     {
-        private static readonly string path = ".conf";
+        private static readonly string path = "../config/.conf";
         private static readonly Config defaultConfig = new()
         {
             Channel = "counting",
