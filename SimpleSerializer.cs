@@ -32,10 +32,7 @@ namespace CountVonCount
                 highscore = int.Parse(lines[4]);
             }
             else
-            {
-                WriteEnvar(config);
-                WriteEnvar(highscore);
-            }
+                WriteConfig(defaultConfig, 0);
 
             return (config, highscore);
         }
